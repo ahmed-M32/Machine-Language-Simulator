@@ -1,0 +1,358 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+
+void run(string &count);
+
+int hexadecimalToDecimal(string hexVal) {
+    int len = hexVal.size();
+
+    int base = 1;
+
+    int dec_val = 0;
+
+
+    for (int i = len - 1; i >= 0; i--) {
+
+        if (hexVal[i] >= '0' && hexVal[i] <= '9') {
+            dec_val += (int(hexVal[i]) - 48) * base;
+
+            base = base * 16;
+        } else if (hexVal[i] >= 'A' && hexVal[i] <= 'F') {
+            dec_val += (int(hexVal[i]) - 55) * base;
+
+            base = base * 16;
+        }
+    }
+    return dec_val;
+}
+
+string decToHexa(int n) {
+    char hexaDeciNum[100];
+    if (n == 0) {
+        return "00";
+    }
+    int i = 0;
+    while (n != 0) {
+        int temp = 0;
+
+        temp = n % 16;
+
+        if (temp < 10) {
+            hexaDeciNum[i] = temp + 48;
+            i++;
+        } else {
+            hexaDeciNum[i] = temp + 55;
+            i++;
+        }
+
+        n = n / 16;
+    }
+    string ans = "";
+
+    for (int j = i - 1; j >= 0; j--)
+        ans += hexaDeciNum[j];
+    if (ans.length() == 1) {
+        return '0' + ans;
+    } else {
+        return ans;
+    }
+}
+
+class Register {
+public:
+
+    map<string, string> rgstr;
+    vector<string> hashRg;
+
+
+    void clear() {
+        rgstr = {
+                {"00", "00"},
+                {"01", "00"},
+                {"02", "00"},
+                {"03", "00"},
+                {"04", "00"},
+                {"05", "00"},
+                {"06", "00"},
+                {"07", "00"},
+                {"08", "00"},
+                {"09", "00"},
+                {"0A", "00"},
+                {"0B", "00"},
+                {"0C", "00"},
+                {"0D", "00"},
+                {"0E", "00"},
+                {"0F", "00"},
+        };
+    }
+
+    Register() {
+        hashRg = {
+                "00",
+                "01",
+                "02",
+                "03",
+                "04",
+                "05",
+                "06",
+                "07",
+                "08",
+                "09",
+                "0A",
+                "0B",
+                "0C",
+                "0D",
+                "0E",
+                "0F",
+
+        };
+        rgstr = {
+                {"00", "00"},
+                {"01", "00"},
+                {"02", "00"},
+                {"03", "00"},
+                {"04", "00"},
+                {"05", "00"},
+                {"06", "00"},
+                {"07", "00"},
+                {"08", "00"},
+                {"09", "00"},
+                {"0A", "00"},
+                {"0B", "00"},
+                {"0C", "00"},
+                {"0D", "00"},
+                {"0E", "00"},
+                {"0F", "00"},
+
+        };
+
+    }
+
+    void printRg() {
+        for (int i = 0; i < hashRg.size(); ++i) {
+            cout << hashRg[i] << " : " << rgstr[hashRg[i]] << endl;
+        }
+    }
+};
+
+class Memory {
+public:
+
+    map<string, string> memory;
+    vector<string> hashMemo;
+
+    Memory() {
+
+        for (int i = 0; i < 256; i++) {
+
+
+            memory.insert({decToHexa(i), "00"});
+            hashMemo.push_back(decToHexa(i));
+        }
+    }
+
+    map<string, string> getMem() {
+        return memory;
+    }
+
+    vector<string> gestHash() {
+        return hashMemo;
+    }
+
+
+    void clearMemory() {
+        fstream out;
+        out.open("output.txt", ios::out);
+
+        map<string, string> me = memory;
+        for (int i = 0; i < hashMemo.size(); i++) {
+
+            out << hashMemo[i] << " : " << "00" << endl;
+        }
+    }
+
+};
+
+class manager {
+
+public:
+    Memory mem;
+    Register reg;
+
+    void loadToMemory(string infile, string start, Memory &m) {
+        fstream readFile;
+        string instruction;
+        string s = infile + ".txt";
+        readFile.open(s, ios::in);
+
+        vector<string> instruct;
+
+        if (readFile.is_open()) {
+
+            while (!readFile.eof()) {
+
+
+                getline(readFile, instruction, '\n');
+
+
+                stringstream line(instruction);
+
+
+                string x = instruction.substr(2, 1) + instruction.substr(6, 1);
+                string y = instruction.substr(10);
+                instruct.push_back(x);
+                instruct.push_back(y);
+
+
+            }
+
+        }
+        readFile.close();
+
+        for (int i = 0; i < mem.hashMemo.size(); ++i) {
+            if (mem.hashMemo[i] == start) {
+                for (int j = 0; j < instruct.size(); j++) {
+                    mem.memory[mem.hashMemo[j + i]] = instruct[j];
+                }
+            }
+        }
+
+    }
+
+    void printMemoryToFile() {
+        fstream out;
+        out.open("output.txt", ios::out);
+
+        map<string, string> memory = mem.getMem();
+        string hashMemo;
+        for (int i = 0; i < this->mem.hashMemo.size(); i++) {
+            hashMemo = mem.gestHash()[i];
+            out << hashMemo << " : " << memory[hashMemo] << endl;
+        }
+    }
+
+
+};
+
+class instruction {
+    char Op;
+
+public:
+    instruction() {
+        Op = '0';
+    }
+
+    void SetOp(char ir) {
+        Op = ir;
+    }
+
+    void instruct(Register &r, Memory &m, string c, string &count) {
+        string rop = c.substr(1, 1);
+        rop = '0' + rop;
+
+        if (Op == '1') {
+            r.rgstr[rop] = m.memory[c.substr(2)];
+        } else if (Op == '2') {
+            r.rgstr[rop] = c.substr(2);
+
+
+        } else if (Op == '3') {
+            m.memory[c.substr(2)] = r.rgstr[rop];
+
+        } else if (Op == '4') {
+            r.rgstr[('0' + c.substr(3))] = r.rgstr[rop];
+
+        } else if (Op == '5') {
+
+            string sum = decToHexa(hexadecimalToDecimal(r.rgstr[('0' + c.substr(2, 1))]) +
+                                   hexadecimalToDecimal(r.rgstr[('0' + c.substr(3))]));
+            if (sum.length() > 2) {
+                r.rgstr[rop] = sum.substr(sum.length() - 2);
+            } else {
+                r.rgstr[rop] = sum;
+            }
+
+
+        } else if (Op == 'B') {
+            if (r.rgstr[rop] == r.rgstr["00"]) {
+                count = c.substr(2);
+                run(count);
+            }
+
+        }
+    }
+};
+
+
+class cpu {
+    string counter;
+    string Ir;
+
+public:
+    void setCounter(string x) {
+        counter = x;
+    }
+
+    void Fetch(Register &rg, Memory &m, string &start) {
+
+
+        map<string, string> memory = m.memory;
+        map<string, string> reg = rg.rgstr;
+
+
+        for (int i = 0; i < 256; i++) {
+
+            if (m.gestHash()[i] == start) {
+
+                Ir = memory[m.hashMemo[i]] + memory[m.gestHash()[i + 1]];
+                i++;
+                if (Ir == "C000") {
+                    break;
+                }
+                Decode(Ir, rg, m, start);
+
+            }
+        }
+
+
+    }
+
+    void Decode(string ir, Register &r, Memory &m, string &count) {
+        char operation = ir[0];
+        count = decToHexa(hexadecimalToDecimal(count) + 2);
+        Execute(operation, ir, r, m, count);
+    }
+
+    void Execute(char op, string code, Register &s, Memory &me, string &counter) {
+        instruction m;
+        m.SetOp(op);
+        m.instruct(s, me, code, counter);
+    }
+};
+
+cpu c;
+
+manager m;
+
+void run(string &count) {
+
+
+    c.Fetch(m.reg, m.mem, count);
+
+}
+
+int main() {
+
+
+    string start = "30";
+    m.loadToMemory("text", start, m.mem);
+    run(start);
+    m.printMemoryToFile();
+
+    m.reg.printRg();
+    m.reg.clear();
+
+
+}
