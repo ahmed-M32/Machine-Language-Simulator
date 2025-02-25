@@ -4,35 +4,46 @@ import { useContext, useEffect, useState } from "react";
 import MemoryBlock from "../components/memory.jsx";
 import Register from "../components/Register.jsx";
 import { SimContext } from "../context/context.jsx";
-import { LoadToMemory ,RunCode} from "../utils/functions.jsx";
+import { LoadToMemory, RunCode } from "../utils/functions.jsx";
 const Simulator = () => {
-
-	const {start,setStart,input,setInput,memory,setMemory} = useContext(SimContext)
+	const {
+		start,
+		setStart,
+		input,
+		setInput,
+		memory,
+		setMemory,
+		register,
+		setRegister,
+	} = useContext(SimContext);
 
 	function handleInput(e) {
-		setInput(e.target.value)
-	}
-	
-	function handleStartAdress(e){
-		setStart(e.target.value)
+		setInput(e.target.value);
 	}
 
-	function load(){
-		let code  = input.split("\n")
+	function handleStartAdress(e) {
+		setStart(e.target.value);
+	}
 
-		console.log(code,"  ,   ",start);
-		const newm =[...memory]
-		const newMemory = LoadToMemory(newm,code,start)
-		setMemory(newMemory)
+	function load() {
+		let code = input.split("\n");
+
+		console.log(code, "  ,   ", start);
+		const newm = [...memory];
+		const newMemory = LoadToMemory(newm, code, start);
+		setMemory(newMemory);
+	}
+	function run(step) {
+		let newReg = [...register];
+		let newMem = [...memory];
+
+		const { register:reg, memory:mem } = RunCode(newReg, newMem, start, step);
+		console.log(mem,reg);
 		
+		setMemory(mem);
+		setRegister(reg);
 	}
-	function run(){
-		let newReg = [...Register]
-		let newMem = [...memory]
 
-		const {reg,mem} = RunCode(newReg,newMem,start);
-	}
-	
 	return (
 		<div className="main">
 			<div className="input">
@@ -40,11 +51,23 @@ const Simulator = () => {
 				<div className="input">
 					<textarea name="" id="" onChange={handleInput}></textarea>
 					Start Address
-					<input type="text" name="" id="" defaultValue={"00"} onChange={handleStartAdress}/>
-					<button className="load" onClick={load}>Load to Memory</button>
-					<button className="run" onClick={run}>
+					<input
+						type="text"
+						name=""
+						id=""
+						defaultValue={"00"}
+						onChange={handleStartAdress}
+					/>
+					<button className="load" onClick={load}>
+						Load to Memory
+					</button>
+					<button className="step" onClick={() => run(true)}>
+						Step
+					</button>
+					<button className="run" onClick={() => run(false)}>
 						Run
 					</button>
+					<div className="pc">PC: {start}</div>
 				</div>
 			</div>
 			<Register />

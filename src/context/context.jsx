@@ -22,7 +22,7 @@ const SimContextProvider = ({ children }) => {
     }
 	const contextValue = {
 		register,
-		updateRegister,
+		setRegister,
 		memory,
 		setMemory,
         input,
