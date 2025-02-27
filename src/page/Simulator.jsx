@@ -16,6 +16,7 @@ const Simulator = () => {
 		register,
 		setRegister,
 	} = useContext(SimContext);
+	const [programCounter,setProgramCounter] = useState(start)
 
 	function handleInput(e) {
 		setInput(e.target.value);
@@ -32,16 +33,18 @@ const Simulator = () => {
 		const newm = [...memory];
 		const newMemory = LoadToMemory(newm, code, start);
 		setMemory(newMemory);
+		setProgramCounter(start)
 	}
 	function run(step) {
 		let newReg = [...register];
 		let newMem = [...memory];
 
-		const { register:reg, memory:mem } = RunCode(newReg, newMem, start, step);
+		const { register:reg, memory:mem,pc:newPc } = RunCode(newReg, newMem, programCounter, step);
 		console.log(mem,reg);
 		
 		setMemory(mem);
 		setRegister(reg);
+		setProgramCounter(newPc);
 	}
 
 	return (
@@ -67,7 +70,7 @@ const Simulator = () => {
 					<button className="run" onClick={() => run(false)}>
 						Run
 					</button>
-					<div className="pc">PC: {start}</div>
+					<div className="pc">PC: {programCounter}</div>
 				</div>
 			</div>
 			<Register />
