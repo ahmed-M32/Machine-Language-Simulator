@@ -1,25 +1,22 @@
 /* eslint-disable no-unused-vars */
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { SimContext } from "../context/context.jsx";
 
 const Register = () => {
-	const {register,setRegister} = useContext(SimContext)
-	console.log(register);
-	
-	return (
-		<div className="mem-block">
-			<h1>Register</h1>
-			{register.map((mem, index) => (
-				
-				<div key={index} className="">
+    const { register } = useContext(SimContext);
 
-					{index.toString(16).toUpperCase().padStart(2, "0")}: {mem[index.toString(16).padStart(2, "0")]}
-				</div>
-			))}
-		</div>
-	);
+    return (
+        <div className="register-block">
+            <h1>Registers</h1>
+            <div className="memory-grid">
+                {register.map((reg, index) => (
+                    <div key={index} className="memory-cell">
+                        R{index.toString(16).toUpperCase()}: {Object.values(reg)[0]}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 };
-
-
 
 export default Register;
