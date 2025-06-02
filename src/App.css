@@ -110,7 +110,12 @@ button:hover {
   border-radius: 0.5rem;
   border: 1px solid var(--border-color);
   max-height: 600px;
-  overflow: auto;
+  overflow-y: scroll;
+
+}
+.mem-block{
+      margin-top: 10px;
+
 }
 
 /* Scrollbar styling */
@@ -148,8 +153,16 @@ button:hover {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 0.5rem;
+  height: 200px;
 }
-
+.memory-block{
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+.mem-block .memory-grid{
+  overflow-y: scroll;
+}
 .memory-cell {
   padding: 0.5rem;
   background-color: var(--bg-secondary);
